@@ -104,6 +104,8 @@ idCVar com_updateLoadSize( "com_updateLoadSize", "0", CVAR_BOOL | CVAR_SYSTEM | 
 
 idCVar com_product_lang_ext( "com_product_lang_ext", "1", CVAR_INTEGER | CVAR_SYSTEM | CVAR_ARCHIVE, "Extension to use when creating language files." );
 
+idCVar com_oldsdk_compatibility("com_oldsdk_compatibility", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_INIT, "Used to allow old SDK compatibility from Doom 3 1.3.1. mods");
+
 // com_speeds times
 int				time_gameFrame;
 int				time_gameDraw;
@@ -710,6 +712,8 @@ Dump out of the game to a system dialog
 ==================
 */
 void idCommonLocal::FatalError( const char *fmt, ... ) {
+
+	assert(0);
 	va_list		argptr;
 
 	// if we got a recursive error, make it fatal
@@ -1069,7 +1073,12 @@ void idCommonLocal::WriteConfiguration( void ) {
 	bool developer = com_developer.GetBool();
 	com_developer.SetBool( false );
 
-	WriteConfigToFile( CONFIG_FILE );
+	if (com_oldsdk_compatibility.GetBool()) {
+		WriteConfigToFile(OLDSDK_CONFIG_FILE);
+	}
+	else {
+		WriteConfigToFile(CONFIG_FILE);
+	}
 	session->WriteCDKey( );
 
 	// restore the developer cvar
@@ -2652,7 +2661,13 @@ void idCommonLocal::LoadGameDLL( void ) {
 		return;
 	}
 
-	gameImport.version					= GAME_API_VERSION;
+	if (com_oldsdk_compatibility.GetBool()) {
+		gameImport.version = OGD3_GAME_API_VERSION;
+	}
+	else {
+		gameImport.version = GAME_API_VERSION;
+	}
+
 	gameImport.sys						= ::sys;
 	gameImport.common					= ::common;
 	gameImport.cmdSystem				= ::cmdSystem;
@@ -2669,7 +2684,7 @@ void idCommonLocal::LoadGameDLL( void ) {
 
 	gameExport							= *GetGameAPI( &gameImport );
 
-	if ( gameExport.version != GAME_API_VERSION ) {
+	if ( (!com_oldsdk_compatibility.GetBool() && gameExport.version != GAME_API_VERSION) || (com_oldsdk_compatibility.GetBool() && gameExport.version != OGD3_GAME_API_VERSION)) {
 		Sys_DLL_Unload( gameDLL );
 		gameDLL = 0;
 		common->FatalError( "wrong game DLL API version" );
@@ -3090,7 +3105,12 @@ void idCommonLocal::InitGame( void ) {
 
 	// skip the config file if "safe" is on the command line
 	if ( !SafeMode() ) {
-		cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec " CONFIG_FILE "\n" );
+		if (com_oldsdk_compatibility.GetBool()) {
+			cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "exec " OLDSDK_CONFIG_FILE "\n");
+		}
+		else {
+			cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "exec " CONFIG_FILE "\n");
+		}
 	}
 	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec autoexec.cfg\n" );
 

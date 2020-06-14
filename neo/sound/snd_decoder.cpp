@@ -522,7 +522,9 @@ int idSampleDecoderLocal::DecodeOGG( idSoundSample *sample, int sampleOffset44k,
 			return 0;
 		}
 		if ( sample->nonCacheData == NULL ) {
-			assert( false );	// this should never happen
+			if (!com_oldsdk_compatibility.GetBool()) {
+				assert(false);	// this should never happen
+			}
 			failed = true;
 			return 0;
 		}
