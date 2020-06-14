@@ -51,6 +51,10 @@ If you have questions concerning this license or the applicable additional terms
 #define CONFIG_FILE						"dhewm.cfg"
 #endif
 
+#ifndef OLDSDK_CONFIG_FILE
+#define OLDSDK_CONFIG_FILE				"DoomConfig.cfg"
+#endif
+
 // base folder where the source code lives
 #define SOURCE_CODE_BASE_FOLDER			"neo"
 

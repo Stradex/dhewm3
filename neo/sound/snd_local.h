@@ -644,9 +644,11 @@ public:
 	// shutdown routine
 	virtual	void			Shutdown( void );
 
+	virtual void			ClearBuffer(void); //added for doom 3 1.3.1. SDK compatibility
+
 	// sound is attached to the window, and must be recreated when the window is changed
+	virtual bool			InitHW(void);
 	virtual bool			ShutdownHW( void );
-	virtual bool			InitHW( void );
 
 	// async loop, called at 60Hz
 	virtual int				AsyncUpdate( int time );
@@ -689,6 +691,11 @@ public:
 
 	ALuint					AllocOpenALSource( idSoundChannel *chan, bool looping, bool stereo );
 	void					FreeOpenALSource( ALuint handle );
+
+	// returns true if openalDevice is still available,
+	// otherwise it will try to recover the device and return false while it's gone
+	// (display audio sound devices sometimes disappear for a few seconds when switching resolution)
+	bool					CheckDeviceAndRecoverIfNeeded();
 
 	idSoundCache *			soundCache;
 
@@ -745,6 +752,11 @@ public:
 	static bool				useEFXReverb;
 							// mark available during initialization, or through an explicit test
 	static int				EFXAvailable;
+
+	// DG: for CheckDeviceAndRecoverIfNeeded()
+	LPALCRESETDEVICESOFT	alcResetDeviceSOFT; // needs ALC_SOFT_HRTF extension
+	int						resetRetryCount;
+	unsigned int			lastCheckTime;
 
 	static idCVar			s_noSound;
 	static idCVar			s_device;

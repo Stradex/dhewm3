@@ -325,6 +325,7 @@ extern idGameEdit *				gameEdit;
 */
 
 const int GAME_API_VERSION		= 9;
+const int OGD3_GAME_API_VERSION = 8; //added for old SDK compatibility
 
 typedef struct {
 
@@ -354,7 +355,8 @@ typedef struct {
 } gameExport_t;
 
 extern "C" {
-typedef gameExport_t * (*GetGameAPI_t)( gameImport_t *import );
+	typedef gameExport_t* (*GetGameAPI_t)(gameImport_t* import);
 }
+
 
 #endif /* !__GAME_H__ */

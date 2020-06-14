@@ -1012,3 +1012,14 @@ void idSysLocal::StartProcess( const char *exePath, bool doexit ) {
 		cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "quit\n" );
 	}
 }
+
+//added for old sdk compatibility
+
+/*
+================
+Sys_GetProcessorString
+================
+*/
+const char* Sys_GetProcessorString(void) {
+	return "generic"; //placeholder only
+}

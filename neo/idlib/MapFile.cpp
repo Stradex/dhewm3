@@ -959,7 +959,7 @@ bool idMapFile::NeedsReload() {
 	if ( name.Length() ) {
 		ID_TIME_T time = (ID_TIME_T)-1;
 		if ( idLib::fileSystem->ReadFile( name, NULL, &time ) > 0 ) {
-			return ( time > fileTime );
+			return ( time > (ID_TIME_T)fileTime );
 		}
 	}
 	return true;

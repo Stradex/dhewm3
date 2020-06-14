@@ -956,10 +956,19 @@ BoundsInAreas
 int idRenderWorldLocal::BoundsInAreas( const idBounds &bounds, int *areas, int maxAreas ) const {
 	int numAreas = 0;
 
-	assert( areas );
-	assert( bounds[0][0] <= bounds[1][0] && bounds[0][1] <= bounds[1][1] && bounds[0][2] <= bounds[1][2] );
-	assert( bounds[1][0] - bounds[0][0] < 1e4f && bounds[1][1] - bounds[0][1] < 1e4f && bounds[1][2] - bounds[0][2] < 1e4f );
+	if (!com_oldsdk_compatibility.GetBool()) {
 
+		assert(areas);
+		assert(bounds[0][0] <= bounds[1][0] && bounds[0][1] <= bounds[1][1] && bounds[0][2] <= bounds[1][2]);
+		assert(bounds[1][0] - bounds[0][0] < 1e4f && bounds[1][1] - bounds[0][1] < 1e4f && bounds[1][2] - bounds[0][2] < 1e4f);
+
+	}
+	else {
+		if (!areas || bounds[0][0] > bounds[1][0] || bounds[0][1] > bounds[1][1] || bounds[0][2] > bounds[1][2] ||
+			(bounds[1][0] - bounds[0][0]) >= 1e4f || (bounds[1][1] - bounds[0][1]) >= 1e4f || (bounds[1][2] - bounds[0][2]) >= 1e4f) {
+			return 0;
+		}
+	}
 	if ( !areaNodes ) {
 		return numAreas;
 	}

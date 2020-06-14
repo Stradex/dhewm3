@@ -73,6 +73,7 @@ extern idCVar		com_showAsyncStats;
 extern idCVar		com_showSoundDecoders;
 extern idCVar		com_makingBuild;
 extern idCVar		com_updateLoadSize;
+extern idCVar		com_oldsdk_compatibility; 
 
 extern idCVar		com_gameHz;
 extern float		com_gameMSRate;

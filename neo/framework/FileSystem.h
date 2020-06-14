@@ -203,6 +203,9 @@ public:
 							// the function tries to configure pure mode from the paks already referenced and this new list
 							// it returns wether the switch was successfull, and sets the missing checksums
 							// the process is verbosive when fs_debug 1
+
+	virtual bool			UpdateGamePakChecksums(void) = 0; //just for backwards compatibility with doom3 1.3.1. SDK
+
 	virtual fsPureReply_t	SetPureServerChecksums( const int pureChecksums[ MAX_PURE_PAKS ], int missingChecksums[ MAX_PURE_PAKS ] ) = 0;
 							// fills a 0-terminated list of pak checksums for a client
 							// if OS is -1, give the current game pak checksum. if >= 0, lookup the game pak table (server only)
@@ -219,6 +222,9 @@ public:
 							// As a quick check for existance. -1 length == not present.
 							// A 0 byte will always be appended at the end, so string ops are safe.
 							// The buffer should be considered read-only, because it may be cached for other uses.
+
+	virtual int				GetOSMask(void) = 0; //just for backwards compatibility with doom3 1.3.1. SDK
+
 	virtual int				ReadFile( const char *relativePath, void **buffer, ID_TIME_T *timestamp = NULL ) = 0;
 							// Frees the memory allocated by ReadFile.
 	virtual void			FreeFile( void *buffer ) = 0;
