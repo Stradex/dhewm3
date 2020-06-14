@@ -57,10 +57,6 @@ unsigned int idSysLocal::GetMilliseconds( void ) {
 	return Sys_Milliseconds();
 }
 
-int idSysLocal::GetProcessorId( void ) {
-	return Sys_GetProcessorId();
-}
-
 void idSysLocal::FPU_SetFTZ( bool enable ) {
 	Sys_FPU_SetFTZ( enable );
 }
@@ -77,15 +73,15 @@ bool idSysLocal::UnlockMemory( void *ptr, int bytes ) {
 	return Sys_UnlockMemory( ptr, bytes );
 }
 
-uintptr_t idSysLocal::DLL_Load( const char *dllName ) {
-	return Sys_DLL_Load( dllName );
+int idSysLocal::DLL_Load( const char *dllName ) {
+	return (int)Sys_DLL_Load( dllName );
 }
 
-void *idSysLocal::DLL_GetProcAddress( uintptr_t dllHandle, const char *procName ) {
+void *idSysLocal::DLL_GetProcAddress( int dllHandle, const char *procName ) {
 	return Sys_DLL_GetProcAddress( dllHandle, procName );
 }
 
-void idSysLocal::DLL_Unload( uintptr_t dllHandle ) {
+void idSysLocal::DLL_Unload( int dllHandle ) {
 	Sys_DLL_Unload( dllHandle );
 }
 
@@ -111,6 +107,52 @@ sysEvent_t idSysLocal::GenerateMouseMoveEvent( int deltax, int deltay ) {
 	ev.evPtrLength = 0;
 	ev.evPtr = NULL;
 	return ev;
+}
+
+//OLD SDK compatibility
+
+double idSysLocal::GetClockTicks(void) {
+	return Sys_GetClockTicks();
+}
+
+double idSysLocal::ClockTicksPerSecond(void) {
+	return Sys_ClockTicksPerSecond();
+}
+
+const char* idSysLocal::GetProcessorString(void) {
+	return Sys_GetProcessorString();
+}
+
+const char* idSysLocal::FPU_GetState(void) {
+	return Sys_FPU_GetState();
+}
+
+bool idSysLocal::FPU_StackIsEmpty(void) {
+	return Sys_FPU_StackIsEmpty();
+}
+
+void idSysLocal::GetCallStack(address_t* callStack, const int callStackSize) {
+	Sys_GetCallStack(callStack, callStackSize);
+}
+
+const char* idSysLocal::GetCallStackStr(const address_t* callStack, const int callStackSize) {
+	return Sys_GetCallStackStr(callStack, callStackSize);
+}
+
+const char* idSysLocal::GetCallStackCurStr(int depth) {
+	return Sys_GetCallStackCurStr(depth);
+}
+
+void idSysLocal::ShutdownSymbols(void) {
+	Sys_ShutdownSymbols();
+}
+
+void idSysLocal::FPU_EnableExceptions(int exceptions) {
+	Sys_FPU_EnableExceptions(exceptions);
+}
+
+cpuid_t idSysLocal::GetProcessorId(void) {
+	return (cpuid_t)Sys_GetProcessorId();
 }
 
 /*
