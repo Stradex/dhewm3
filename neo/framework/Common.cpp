@@ -1073,7 +1073,12 @@ void idCommonLocal::WriteConfiguration( void ) {
 	bool developer = com_developer.GetBool();
 	com_developer.SetBool( false );
 
-	WriteConfigToFile( CONFIG_FILE );
+	if (com_oldsdk_compatibility.GetBool()) {
+		WriteConfigToFile(OLDSDK_CONFIG_FILE);
+	}
+	else {
+		WriteConfigToFile(CONFIG_FILE);
+	}
 	session->WriteCDKey( );
 
 	// restore the developer cvar
@@ -3100,7 +3105,12 @@ void idCommonLocal::InitGame( void ) {
 
 	// skip the config file if "safe" is on the command line
 	if ( !SafeMode() ) {
-		cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec " CONFIG_FILE "\n" );
+		if (com_oldsdk_compatibility.GetBool()) {
+			cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "exec " OLDSDK_CONFIG_FILE "\n");
+		}
+		else {
+			cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "exec " CONFIG_FILE "\n");
+		}
 	}
 	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec autoexec.cfg\n" );
 
