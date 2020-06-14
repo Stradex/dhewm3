@@ -1437,3 +1437,12 @@ int idSoundSystemLocal::IsEFXAvailable( void ) {
 	return EFXAvailable;
 #endif
 }
+
+/*
+=================
+idSoundSystemLocal::ClearBuffer
+=================
+*/
+void idSoundSystemLocal::ClearBuffer( void ) {
+	//place holder only for doom 3 1.3.1 sdk compatibility
+}

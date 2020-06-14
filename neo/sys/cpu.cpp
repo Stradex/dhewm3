@@ -232,3 +232,111 @@ void Sys_FPU_SetPrecision() {
 	_controlfp(_PC_64, _MCW_PC);
 #endif
 }
+
+//for old sdk compatibility
+
+static byte fpuState[128], * statePtr = fpuState;
+static char fpuString[2048];
+
+/*
+===============
+Sys_FPU_StackIsEmpty
+===============
+*/
+bool Sys_FPU_StackIsEmpty(void) {
+	__asm {
+		mov			eax, statePtr
+		fnstenv[eax]
+		mov			eax, [eax + 8]
+		xor eax, 0xFFFFFFFF
+		and eax, 0x0000FFFF
+		jz			empty
+	}
+	return false;
+empty:
+	return true;
+}
+
+
+/*
+===============
+Sys_FPU_GetState
+  gets the FPU state without changing the state
+===============
+*/
+const char* Sys_FPU_GetState(void) {
+	return "place holder... not used";
+}
+
+
+/*
+===============
+Sys_FPU_EnableExceptions
+===============
+*/
+void Sys_FPU_EnableExceptions(int exceptions) {
+	__asm {
+		mov			eax, statePtr
+		mov			ecx, exceptions
+		and cx, 63
+		not cx
+		fnstcw		word ptr[eax]
+		mov			bx, word ptr[eax]
+		or bx, 63
+		and bx, cx
+		mov			word ptr[eax], bx
+		fldcw		word ptr[eax]
+	}
+}
+
+/*
+================
+Sys_GetClockTicks
+================
+*/
+double Sys_GetClockTicks(void) {
+	unsigned long lo, hi;
+
+	__asm {
+		push ebx
+		xor eax, eax
+		cpuid
+		rdtsc
+		mov lo, eax
+		mov hi, edx
+		pop ebx
+	}
+	return (double)lo + (double)0xFFFFFFFF * hi;
+}
+
+/*
+================
+Sys_ClockTicksPerSecond
+================
+*/
+double Sys_ClockTicksPerSecond(void) {
+	static double ticks = 0;
+	if (!ticks) {
+		HKEY hKey;
+		LPBYTE ProcSpeed;
+		DWORD buflen, ret;
+
+		if (!RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", 0, KEY_READ, &hKey)) {
+			ProcSpeed = 0;
+			buflen = sizeof(ProcSpeed);
+			ret = RegQueryValueEx(hKey, "~MHz", NULL, NULL, (LPBYTE)&ProcSpeed, &buflen);
+			// If we don't succeed, try some other spellings.
+			if (ret != ERROR_SUCCESS) {
+				ret = RegQueryValueEx(hKey, "~Mhz", NULL, NULL, (LPBYTE)&ProcSpeed, &buflen);
+			}
+			if (ret != ERROR_SUCCESS) {
+				ret = RegQueryValueEx(hKey, "~mhz", NULL, NULL, (LPBYTE)&ProcSpeed, &buflen);
+			}
+			RegCloseKey(hKey);
+			if (ret == ERROR_SUCCESS) {
+				ticks = (double)((unsigned long)ProcSpeed) * 1000000;
+			}
+		}
+	}
+	return ticks;
+}

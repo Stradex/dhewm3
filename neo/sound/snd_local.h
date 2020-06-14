@@ -645,9 +645,11 @@ public:
 	// shutdown routine
 	virtual	void			Shutdown( void );
 
+	virtual void			ClearBuffer(void); //added for doom 3 1.3.1. SDK compatibility
+
 	// sound is attached to the window, and must be recreated when the window is changed
+	virtual bool			InitHW(void);
 	virtual bool			ShutdownHW( void );
-	virtual bool			InitHW( void );
 
 	// async loop, called at 60Hz
 	virtual int				AsyncUpdate( int time );

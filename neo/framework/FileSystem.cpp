@@ -350,10 +350,12 @@ public:
 	virtual void			CreateOSPath( const char *OSPath );
 	virtual bool			FileIsInPAK( const char *relativePath );
 	virtual void			UpdatePureServerChecksums( void );
+	virtual bool			UpdateGamePakChecksums(void); //just for backwards compatibility with doom3 1.3.1. SDK
 	virtual fsPureReply_t	SetPureServerChecksums( const int pureChecksums[ MAX_PURE_PAKS ], int missingChecksums[ MAX_PURE_PAKS ] );
 	virtual void			GetPureServerChecksums( int checksums[ MAX_PURE_PAKS ] );
 	virtual void			SetRestartChecksums( const int pureChecksums[ MAX_PURE_PAKS ] );
 	virtual	void			ClearPureChecksums( void );
+	virtual int				GetOSMask(void); //just for backwards compatibility with doom3 1.3.1. SDK
 	virtual int				ReadFile( const char *relativePath, void **buffer, ID_TIME_T *timestamp );
 	virtual void			FreeFile( void *buffer );
 	virtual int				WriteFile( const char *relativePath, const void *buffer, int size, const char *basePath = "fs_savepath" );
@@ -1344,7 +1346,7 @@ pack_t *idFileSystemLocal::LoadZipFile( const char *zipfile ) {
 			unzClose(uf);
 			delete[] buildBuffer;
 			delete pack;
-			Mem_Free( fs_headerLongs );
+			Mem_Free(fs_headerLongs);
 			return NULL;
 		}
 	}
@@ -3110,6 +3112,8 @@ idFile *idFileSystemLocal::OpenFileReadFlags( const char *relativePath, int sear
 
 			// look through all the pak file elements
 			pak = search->pack;
+
+
 			for ( pakFile = pak->hashTable[hash]; pakFile; pakFile = pakFile->next ) {
 				// case and separator insensitive comparisons
 				if ( !FilenameCompare( pakFile->name, relativePath ) ) {
@@ -3658,8 +3662,10 @@ void idFileSystemLocal::FindDLL( const char *name, char _dllPath[ MAX_OSPATH ] )
 		dllFile = OpenExplicitFileRead( dllPath );
 	}
 
-	if ( !dllFile && !serverPaks.Num() )
-		dllFile = OpenFileReadFlags( dllName, FSFLAG_SEARCH_DIRS );
+	pack_t* inPak;
+	pack_t* pak;
+	if (!dllFile && !serverPaks.Num())
+			dllFile = OpenFileReadFlags(dllName, FSFLAG_SEARCH_DIRS);
 
 	if ( dllFile ) {
 		dllPath = dllFile->GetFullPath( );
@@ -3922,4 +3928,13 @@ void idFileSystemLocal::FindMapScreenshot( const char *path, char *buf, int len 
 			idStr::Copynz( buf, "guis/assets/splash/pdtempa", len );
 		}
 	}
+}
+
+
+bool idFileSystemLocal::UpdateGamePakChecksums(void) {
+	return true; //placeholder only
+}
+
+int	idFileSystemLocal::GetOSMask(void) {
+	return -1; //placeholder only
 }
