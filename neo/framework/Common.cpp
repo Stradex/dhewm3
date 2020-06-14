@@ -713,7 +713,6 @@ Dump out of the game to a system dialog
 */
 void idCommonLocal::FatalError( const char *fmt, ... ) {
 
-	assert(0);
 	va_list		argptr;
 
 	// if we got a recursive error, make it fatal
